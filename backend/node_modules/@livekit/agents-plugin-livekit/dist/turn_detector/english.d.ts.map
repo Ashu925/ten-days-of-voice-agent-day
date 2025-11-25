@@ -1,0 +1,1 @@
+{"version":3,"file":"english.d.ts","sourceRoot":"","sources":["../../src/turn_detector/english.ts"],"names":[],"mappings":"AAGA,OAAO,EAAE,QAAQ,EAAE,aAAa,EAAE,MAAM,WAAW,CAAC;AAEpD,eAAO,MAAM,mBAAmB,2BAA2B,CAAC;AAE5D,qBAAa,WAAY,SAAQ,aAAa;;CAI7C;AAED,qBAAa,YAAa,SAAQ,QAAQ;gBAC5B,iBAAiB,CAAC,EAAE,MAAM;IAOtC,eAAe,IAAI,MAAM;CAG1B;AAED,eAAe,WAAW,CAAC"}

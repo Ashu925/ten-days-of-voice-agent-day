@@ -7,3 +7,8 @@ livekit-server --dev &
 
 # Wait for all background jobs
 wait
+Set-Location 'C:\Users\ayush\OneDrive\Desktop\ten-days-of-voice-agents-2025\backend'
+# Activate venv (PowerShell)
+.\.venv\Scripts\Activate.ps1
+# Run the agent (dev arg)
+python .\src\agent.py dev

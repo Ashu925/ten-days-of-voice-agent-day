@@ -1,0 +1,22 @@
+[
+  {
+    "timestamp": "2025-11-24T00:08:05.929380",
+    "mood": "low",
+    "energy": "medium",
+    "stress": "stress about my studies",
+    "intentions": [
+      "none"
+    ],
+    "summary": "The user is feeling low with medium energy and stress about studies. No specific intentions were set for the day."
+  },
+  {
+    "timestamp": "2025-11-24T00:57:30.147390",
+    "mood": "little bit good",
+    "energy": "medium",
+    "stress": "no specific stress mentioned",
+    "intentions": [
+      "none"
+    ],
+    "summary": "The user is feeling a little bit good with medium energy. No specific intentions were set for the day."
+  }
+]

@@ -1,0 +1,1 @@
+{"version":3,"file":"constants.d.ts","sourceRoot":"","sources":["../../src/turn_detector/constants.ts"],"names":[],"mappings":"AAGA,MAAM,MAAM,YAAY,GAAG,IAAI,GAAG,cAAc,CAAC;AAEjD,eAAO,MAAM,kBAAkB,MAAM,CAAC;AACtC,eAAO,MAAM,iBAAiB,IAAI,CAAC;AAEnC,eAAO,MAAM,eAAe,EAAE,MAAM,CAAC,YAAY,EAAE,MAAM,CAGxD,CAAC;AAEF,eAAO,MAAM,aAAa,0BAA0B,CAAC;AAErD,eAAO,MAAM,aAAa,uBAAuB,CAAC"}

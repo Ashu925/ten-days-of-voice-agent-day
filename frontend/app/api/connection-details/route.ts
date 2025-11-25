@@ -29,9 +29,21 @@ export async function POST(req: Request) {
       throw new Error('LIVEKIT_API_SECRET is not defined');
     }
 
-    // Parse agent configuration from request body
-    const body = await req.json();
-    const agentName: string = body?.room_config?.agents?.[0]?.agent_name;
+    // Parse agent configuration from request body (guard against empty/invalid JSON)
+    let body: any = {};
+    try {
+      const text = await req.text();
+      if (text && text.trim().length > 0) {
+        body = JSON.parse(text);
+      } else {
+        body = {};
+      }
+    } catch (e) {
+      console.error('Invalid JSON in request body', e);
+      return new NextResponse('Invalid JSON body', { status: 400 });
+    }
+
+    const agentName: string | undefined = body?.room_config?.agents?.[0]?.agent_name;
 
     // Generate participant token
     const participantName = 'user';
@@ -67,7 +79,7 @@ function createParticipantToken(
   userInfo: AccessTokenOptions,
   roomName: string,
   agentName?: string
-): Promise<string> {
+): string {
   const at = new AccessToken(API_KEY, API_SECRET, {
     ...userInfo,
     ttl: '15m',

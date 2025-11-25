@@ -19,7 +19,7 @@ out/
 .env.development.local
 .env.production.local
 .env.test.local
-
+.env.example
 # Logs
 logs
 *.log
