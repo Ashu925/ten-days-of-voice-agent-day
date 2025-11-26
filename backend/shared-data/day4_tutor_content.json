@@ -1,0 +1,42 @@
+[
+  {
+    "id": "arrays",
+    "title": "Arrays",
+    "summary": "Arrays store multiple values in a single ordered structure. They allow indexing, iteration, and efficient data organization. Arrays are useful when you need to group similar items together.",
+    "sample_questions": [
+      "What is an array and how is it different from a variable?",
+      "How do you access elements inside an array?",
+      "Why should you use arrays when handling multiple data items?"
+    ]
+  },
+  {
+    "id": "objects",
+    "title": "Objects",
+    "summary": "Objects store data in key-value pairs, making them ideal for representing complex structures. They help group related properties and behaviors into a single unit.",
+    "sample_questions": [
+      "What is an object in programming?",
+      "How do you create and access properties in an object?",
+      "When would you prefer objects over arrays?"
+    ]
+  },
+  {
+    "id": "events",
+    "title": "Events",
+    "summary": "Events represent actions or occurrences like clicks, key presses, or messages. They allow programs to respond dynamically, enabling interactive behavior in applications.",
+    "sample_questions": [
+      "What is an event listener?",
+      "How do events enable user interaction?",
+      "Give an example of handling a click event."
+    ]
+  },
+  {
+    "id": "error_handling",
+    "title": "Error Handling",
+    "summary": "Error handling ensures a program continues running smoothly even when unexpected issues occur. Using try-catch blocks helps manage and recover from errors gracefully.",
+    "sample_questions": [
+      "What is the purpose of a try-catch block?",
+      "Why is error handling important in a program?",
+      "Give an example of handling an error in code."
+    ]
+  }
+]
