@@ -1,0 +1,64 @@
+{
+  "recipes": [
+    {
+      "dish": "simple rice bowl",
+      "items": ["basmati_rice", "sunflower_oil"],
+      "quantities": [1, 0.1],
+      "description": "A basic steamed rice bowl with a touch of oil"
+    },
+    {
+      "dish": "classic dal chawal",
+      "items": ["basmati_rice", "toor_dal"],
+      "quantities": [1, 1],
+      "description": "Traditional Indian dish of rice and dal"
+    },
+    {
+      "dish": "fruit snack pack",
+      "items": ["apple", "banana"],
+      "quantities": [1, 1],
+      "description": "Healthy fruit combo snack"
+    },
+    {
+      "dish": "instant noodle meal",
+      "items": ["instant_noodles", "sunflower_oil"],
+      "quantities": [1, 0.05],
+      "description": "Quick stovetop noodles with a little oil"
+    },
+    {
+      "dish": "vegetarian protein bowl",
+      "items": ["lentils_red", "basmati_rice", "sunflower_oil"],
+      "quantities": [1, 1, 0.1],
+      "description": "High-protein rice and lentil bowl"
+    },
+    {
+      "dish": "paneer salad",
+      "items": ["paneer", "apple", "lettuce"],
+      "quantities": [0.5, 1, 1],
+      "description": "Refreshing salad with paneer cubes, apples, and lettuce"
+    },
+    {
+      "dish": "sweet breakfast",
+      "items": ["banana", "butter", "atta"],
+      "quantities": [1, 0.1, 0.5],
+      "description": "Bananas with warm paratha made from atta and butter"
+    },
+    {
+      "dish": "energy drink combo",
+      "items": ["orange_juice", "cold_drink"],
+      "quantities": [1, 1],
+      "description": "A refreshing drink mix for an instant energy boost"
+    },
+    {
+      "dish": "laundry day snack",
+      "items": ["instant_noodles", "cold_drink"],
+      "quantities": [1, 1],
+      "description": "Quick meal while doing laundry"
+    },
+    {
+      "dish": "family rice platter",
+      "items": ["basmati_rice", "sunflower_oil", "chicken_thigh"],
+      "quantities": [2, 0.2, 1],
+      "description": "Rice platter with chicken and oil for a family dinner"
+    }
+  ]
+}

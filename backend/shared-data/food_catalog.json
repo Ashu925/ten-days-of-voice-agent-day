@@ -1,0 +1,134 @@
+{
+  "store": {
+    "name": "Daily Needs SuperStore",
+    "description": "Affordable essentials, household items, and everyday groceries"
+  },
+  "items": [
+    {
+      "id": "basmati_rice",
+      "name": "Basmati Rice",
+      "category": "Groceries",
+      "price": 6.99,
+      "unit": "kg",
+      "description": "Premium long-grain basmati rice",
+      "tags": ["vegetarian", "vegan", "staple"]
+    },
+    {
+      "id": "atta",
+      "name": "Whole Wheat Atta",
+      "category": "Groceries",
+      "price": 5.49,
+      "unit": "kg",
+      "description": "Stone-ground whole wheat flour",
+      "tags": ["vegetarian", "vegan", "staple"]
+    },
+    {
+      "id": "lentils_red",
+      "name": "Red Lentils",
+      "category": "Groceries",
+      "price": 4.19,
+      "unit": "kg",
+      "description": "Protein-rich red lentils",
+      "tags": ["vegetarian", "vegan", "protein"]
+    },
+    {
+      "id": "sunflower_oil",
+      "name": "Sunflower Oil",
+      "category": "Groceries",
+      "price": 8.49,
+      "unit": "liter",
+      "description": "Refined sunflower cooking oil",
+      "tags": ["vegetarian", "vegan", "cooking"]
+    },
+    {
+      "id": "toor_dal",
+      "name": "Toor Dal",
+      "category": "Groceries",
+      "price": 7.89,
+      "unit": "kg",
+      "description": "High-quality toor dal",
+      "tags": ["vegetarian", "vegan", "protein"]
+    },
+    {
+      "id": "apple",
+      "name": "Fresh Apples",
+      "category": "Fruits",
+      "price": 3.99,
+      "unit": "kg",
+      "description": "Crisp and juicy apples",
+      "tags": ["vegetarian", "vegan", "fresh"]
+    },
+    {
+      "id": "banana",
+      "name": "Bananas",
+      "category": "Fruits",
+      "price": 1.49,
+      "unit": "kg",
+      "description": "Fresh ripe bananas",
+      "tags": ["vegetarian", "vegan", "fresh"]
+    },
+    {
+      "id": "cold_drink",
+      "name": "Cola Drink",
+      "category": "Beverages",
+      "price": 1.29,
+      "unit": "500ml bottle",
+      "description": "Chilled carbonated cola drink",
+      "tags": ["beverage", "snack"]
+    },
+    {
+      "id": "instant_noodles",
+      "name": "Instant Noodles",
+      "category": "Snacks",
+      "price": 0.99,
+      "unit": "pack",
+      "description": "Quick-cook instant noodles",
+      "tags": ["snack", "quick-meal"]
+    },
+    {
+      "id": "paneer",
+      "name": "Paneer Cubes",
+      "category": "Dairy",
+      "price": 3.99,
+      "unit": "200g pack",
+      "description": "Fresh paneer cubes",
+      "tags": ["dairy", "vegetarian", "protein"]
+    },
+    {
+      "id": "butter",
+      "name": "Salted Butter",
+      "category": "Dairy",
+      "price": 2.99,
+      "unit": "100g pack",
+      "description": "Creamy salted butter",
+      "tags": ["dairy", "vegetarian"]
+    },
+    {
+      "id": "chicken_thigh",
+      "name": "Chicken Thigh",
+      "category": "Meat",
+      "price": 9.49,
+      "unit": "kg",
+      "description": "Fresh chicken thigh pieces",
+      "tags": ["meat", "protein"]
+    },
+    {
+      "id": "soap",
+      "name": "Bath Soap",
+      "category": "Household",
+      "price": 1.29,
+      "unit": "bar",
+      "description": "Gentle cleansing bath soap",
+      "tags": ["household"]
+    },
+    {
+      "id": "detergent",
+      "name": "Laundry Detergent",
+      "category": "Household",
+      "price": 7.99,
+      "unit": "1kg pack",
+      "description": "Powerful stain-removal detergent",
+      "tags": ["household", "cleaning"]
+    }
+  ]
+}
