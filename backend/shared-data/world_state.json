@@ -1,0 +1,39 @@
+{
+  "universe": "fantasy",
+  "tone": "dramatic",
+  "player": {
+    "footwear": "simple sandals"
+  },
+  "locations": {
+    "current": "Forest Edge",
+    "known": {
+      "Forest Edge": {
+        "description": "A quiet forest entrance. Birds chirp.",
+        "paths": [
+          "Deep Forest"
+        ]
+      },
+      "Deep Forest": {
+        "description": "Tall trees block the sunlight.",
+        "paths": [
+          "Forest Edge",
+          "Ancient Shrine"
+        ]
+      }
+    }
+  },
+  "events": {
+    "history": []
+  },
+  "npcs": {},
+  "quests": {
+    "active": [],
+    "completed": []
+  },
+  "player_name": "Ayush",
+  "player_inventory": [],
+  "player_hp": 100,
+  "player_location": "dripping_chamber",
+  "current_location": "start_area",
+  "location": "outside the cave"
+}

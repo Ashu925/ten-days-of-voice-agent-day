@@ -3,456 +3,271 @@ import os
 import json
 import datetime
 import asyncio
-from typing import Optional, List, Dict
-
+from typing import Optional, Dict, Any
 from dotenv import load_dotenv
 
-# LiveKit framework and plugins
+# LiveKit framework
 from livekit.agents import (
     Agent,
     JobContext,
     JobProcess,
-    MetricsCollectedEvent,
     RoomInputOptions,
     WorkerOptions,
     cli,
-    metrics,
-    tokenize,
     function_tool,
     RunContext,
 )
 from livekit.agents.voice import AgentSession
 from livekit.plugins import murf, silero, google, deepgram, noise_cancellation
 from livekit.plugins.turn_detector.multilingual import MultilingualModel
+from livekit.agents import tokenize
 
 logger = logging.getLogger("agent")
-
 load_dotenv(".env.local")
-class Assistant(Agent):
-    def __init__(self) -> None:
-        # Food ordering voice
-        self.VOICE_FRIENDLY = {"voice_id": "Alicia", "style": "Friendly", "model": "Falcon"}
 
-        super().__init__(
-            instructions=(
-                "You are a friendly, helpful food and grocery ordering assistant for FreshMart.\n"
-                "Help customers browse the catalog, add items to their cart, handle special requests like 'ingredients for X', and place orders.\n"
-                "Be conversational, confirm cart changes, and suggest items when appropriate.\n"
-                "When the customer is done, finalize their order and place it.\n"
-                "Never push items; let them browse at their own pace."
-            )
-        )
+# -------------------------------------------------------
+#   Load / Save JSON WORLD STATE
+# -------------------------------------------------------
+WORLD_STATE_PATH = os.path.join(os.getcwd(), "shared-data", "world_state.json")
 
-        # Food ordering state
-        self.catalog: Dict = {}
-        self.recipes: Dict = {}
-        self.cart: Dict[str, Dict] = {}  # item_id -> {item_obj, quantity}
-        self.orders_file = os.path.join(os.getcwd(), "shared-data", "orders.json")
-        self.catalog_file = os.path.join(os.getcwd(), "shared-data", "food_catalog.json")
-        self.recipes_file = os.path.join(os.getcwd(), "shared-data", "recipes.json")
 
-        # Load catalog and recipes
-        self._load_catalog()
-        self._load_recipes()
-
-    def _load_catalog(self):
+def load_world_state() -> Dict[str, Any]:
+    if os.path.exists(WORLD_STATE_PATH):
         try:
-            if os.path.exists(self.catalog_file):
-                with open(self.catalog_file, "r", encoding="utf-8") as f:
-                    data = json.load(f)
-                    self.catalog = {item["id"]: item for item in data.get("items", [])}
-        except Exception as e:
-            logger.error(f"Failed to load catalog: {e}")
+            with open(WORLD_STATE_PATH, "r") as f:
+                return json.load(f)
+        except:
+            pass
 
-    def _load_recipes(self):
-        try:
-            if os.path.exists(self.recipes_file):
-                with open(self.recipes_file, "r", encoding="utf-8") as f:
-                    data = json.load(f)
-                    self.recipes = {r["dish"].lower(): r for r in data.get("recipes", [])}
-        except Exception as e:
-            logger.error(f"Failed to load recipes: {e}")
+    # Default starting world state (simple story)
+    return {
+        "player": {
+            "name": "Player",
+            "class": "Adventurer",
+            "hp": 20,
+            "inventory": [],
+            "traits": ["curious", "brave"]
+        },
 
-    # ---------------- Ordering tools ----------------
-    @function_tool
-    async def search_catalog(self, context: RunContext, query: str):
-        """Search the catalog by item name or category."""
-        query_lower = (query or "").lower()
-        results = []
-        for item_id, item in self.catalog.items():
-            name = (item.get("name") or "").lower()
-            category = (item.get("category") or "").lower()
-            if query_lower in name or query_lower in category:
-                results.append({
-                    "id": item_id,
-                    "name": item.get("name"),
-                    "price": item.get("price"),
-                    "unit": item.get("unit"),
-                    "category": item.get("category"),
-                    "description": item.get("description")
-                })
-        return {"results": results, "count": len(results)}
-
-    @function_tool
-    async def add_item_to_cart(self, context: RunContext, item_name: str, quantity: float = 1.0):
-        """Add an item to the cart by name or ID."""
-        item_name_lower = (item_name or "").lower()
-        item_id = None
-        item_obj = None
-
-        # Try exact ID match first
-        if item_name in self.catalog:
-            item_id = item_name
-            item_obj = self.catalog[item_name]
-        else:
-            # Try name match
-            for iid, itm in self.catalog.items():
-                if (itm.get("name") or "").lower() == item_name_lower:
-                    item_id = iid
-                    item_obj = itm
-                    break
-            # Fallback: substring match
-            if not item_id:
-                for iid, itm in self.catalog.items():
-                    if item_name_lower in (itm.get("name") or "").lower():
-                        item_id = iid
-                        item_obj = itm
-                        break
-
-        if not item_obj:
-            return {"status": "error", "message": f"Item '{item_name}' not found in catalog."}
-
-        if item_id in self.cart:
-            self.cart[item_id]["quantity"] += quantity
-        else:
-            self.cart[item_id] = {"item": item_obj, "quantity": quantity}
-
-        return {
-            "status": "ok",
-            "message": f"Added {quantity} {item_obj.get('unit')}(s) of {item_obj.get('name')} to cart.",
-            "item_name": item_obj.get("name"),
-            "quantity": self.cart[item_id]["quantity"]
-        }
-
-    @function_tool
-    async def remove_item_from_cart(self, context: RunContext, item_name: str):
-        """Remove an item from the cart by name."""
-        item_name_lower = (item_name or "").lower()
-        item_id = None
-
-        for iid, cart_entry in self.cart.items():
-            if (cart_entry["item"].get("name") or "").lower() == item_name_lower:
-                item_id = iid
-                break
-
-        if not item_id:
-            return {"status": "error", "message": f"'{item_name}' not in cart."}
-
-        removed = self.cart.pop(item_id)
-        return {
-            "status": "ok",
-            "message": f"Removed {removed['item'].get('name')} from cart."
-        }
-
-    @function_tool
-    async def view_cart(self, context: RunContext):
-        """Show all items currently in the cart."""
-        if not self.cart:
-            return {"status": "empty", "message": "Your cart is empty."}
-
-        total = 0.0
-        items = []
-        for item_id, entry in self.cart.items():
-            item = entry["item"]
-            qty = entry["quantity"]
-            price = float(item.get("price", 0))
-            subtotal = price * qty
-            total += subtotal
-            items.append({
-                "name": item.get("name"),
-                "quantity": qty,
-                "unit": item.get("unit"),
-                "price_each": price,
-                "subtotal": round(subtotal, 2)
-            })
-
-        return {
-            "status": "ok",
-            "items": items,
-            "total": round(total, 2),
-            "item_count": len(items)
-        }
-
-    @function_tool
-    async def add_recipe(self, context: RunContext, dish: str):
-        """Add ingredients for a dish (e.g., 'ingredients for spaghetti')."""
-        dish_lower = (dish or "").lower().strip()
-        recipe = self.recipes.get(dish_lower)
-
-        if not recipe:
-            return {"status": "error", "message": f"Recipe for '{dish}' not found."}
-
-        added_items = []
-        for item_id, qty in zip(recipe.get("items", []), recipe.get("quantities", [])):
-            if item_id in self.catalog:
-                item = self.catalog[item_id]
-                if item_id in self.cart:
-                    self.cart[item_id]["quantity"] += qty
-                else:
-                    self.cart[item_id] = {"item": item, "quantity": qty}
-                added_items.append(f"{qty} {item.get('unit')}(s) of {item.get('name')}")
-
-        if added_items:
-            return {
-                "status": "ok",
-                "message": f"I've added ingredients for {recipe.get('description')}: {', '.join(added_items)}",
-                "items_added": added_items
+        "locations": {
+            "current": "Willowvale Village",
+            "known": {
+                "Willowvale Village": {
+                    "description": "A peaceful village with wooden houses.",
+                    "paths": ["Forest Path", "Riverbank", "Old Cabin"]
+                },
+                "Forest Path": {
+                    "description": "A quiet forest trail with tall trees.",
+                    "paths": ["Willowvale Village"]
+                },
+                "Riverbank": {
+                    "description": "A calm river where Milo often plays.",
+                    "paths": ["Willowvale Village"]
+                },
+                "Old Cabin": {
+                    "description": "A dusty wooden cabin belonging to Miller Rowan.",
+                    "paths": ["Willowvale Village"]
+                }
             }
-        else:
-            return {"status": "error", "message": "Could not add recipe items."}
+        },
 
-    @function_tool
-    async def list_recipes(self, context: RunContext):
-        """List available recipes."""
-        dishes = [
-            {"dish": dish, "description": r.get("description")}
-            for dish, r in self.recipes.items()
-        ]
-        return {"recipes": dishes, "count": len(dishes)}
-
-    @function_tool
-    async def place_order(self, context: RunContext, customer_name: str = "Guest"):
-        """Finalize the cart and place the order (save to JSON)."""
-        if not self.cart:
-            return {"status": "error", "message": "Cart is empty. Cannot place order."}
-
-        # Calculate totals
-        total = 0.0
-        order_items = []
-        for item_id, entry in self.cart.items():
-            item = entry["item"]
-            qty = entry["quantity"]
-            price = float(item.get("price", 0))
-            subtotal = price * qty
-            total += subtotal
-            order_items.append({
-                "item_id": item_id,
-                "name": item.get("name"),
-                "quantity": qty,
-                "unit": item.get("unit"),
-                "price_each": price,
-                "subtotal": round(subtotal, 2)
-            })
-
-        # Create order object
-        order = {
-            "order_id": f"ORD-{int(datetime.datetime.now().timestamp() * 1000) % 1000000}",
-            "timestamp": datetime.datetime.now().isoformat(),
-            "customer_name": customer_name,
-            "items": order_items,
-            "total": round(total, 2),
-            "status": "placed",
-            "notes": ""
-        }
-
-        # Save to JSON atomically
-        try:
-            os.makedirs(os.path.dirname(self.orders_file), exist_ok=True)
-            orders = []
-            if os.path.exists(self.orders_file):
-                with open(self.orders_file, "r", encoding="utf-8") as f:
-                    try:
-                        orders = json.load(f)
-                        if not isinstance(orders, list):
-                            orders = []
-                    except Exception:
-                        orders = []
-
-            orders.append(order)
-            tmp = self.orders_file + ".tmp"
-            with open(tmp, "w", encoding="utf-8") as f:
-                json.dump(orders, f, ensure_ascii=False, indent=2)
-            os.replace(tmp, self.orders_file)
-
-            # Clear cart after order
-            self.cart = {}
-
-            return {
-                "status": "ok",
-                "message": f"Order {order['order_id']} placed successfully!",
-                "order_id": order["order_id"],
-                "total": order["total"],
-                "item_count": len(order_items)
+        "npcs": {
+            "Elda": {
+                "role": "Village Elder",
+                "attitude": "friendly",
+                "alive": True,
+                "location": "Willowvale Village"
+            },
+            "Milo": {
+                "role": "Young boy from the village",
+                "attitude": "friendly",
+                "alive": True,
+                "location": "Riverbank"
+            },
+            "Miller Rowan": {
+                "role": "Old miller",
+                "attitude": "neutral",
+                "alive": True,
+                "location": "Old Cabin"
+            },
+            "Shadow Wolf": {
+                "role": "Forest creature",
+                "attitude": "hostile",
+                "alive": True,
+                "location": "Forest Path"
             }
-        except Exception as e:
-            logger.error(f"Failed to place order: {e}")
-            return {"status": "error", "message": "Failed to place order. Please try again."}
+        },
 
-    async def _ensure_voice(self, context: Optional[RunContext], voice):
-        """Best-effort TTS voice switching."""
-        self._requested_voice = voice
-        if context is None:
-            return
-        try:
-            session = getattr(context, "session", None)
-            if session is not None:
-                tts = getattr(session, "tts", None)
-                if tts is not None:
-                    try:
-                        maybe = tts.set_voice
-                        if asyncio.iscoroutinefunction(maybe):
-                            await maybe(voice)
-                        else:
-                            await asyncio.to_thread(maybe, voice)
-                        return
-                    except Exception:
-                        try:
-                            if isinstance(voice, dict):
-                                setattr(tts, "voice", voice.get("voice_id"))
-                            else:
-                                setattr(tts, "voice", voice)
-                            return
-                        except Exception:
-                            return
-        except Exception:
-            return
+        "quests": {
+            "main_quest": {
+                "title": "The Lost Amulet of Willowvale",
+                "completed": False,
+                "current_step": "Talk to Elder Elda",
+                "steps_completed": []
+            }
+        },
+
+        "events": {
+            "met_elda": False,
+            "met_milo": False,
+            "fought_shadow_wolf": False,
+            "confronted_miller": False,
+            "found_amulet": False
+        }
+    }
 
 
+def save_world_state(state: Dict[str, Any]):
+    os.makedirs(os.path.dirname(WORLD_STATE_PATH), exist_ok=True)
+    tmp = WORLD_STATE_PATH + ".tmp"
+    with open(tmp, "w") as f:
+        json.dump(state, f, indent=2)
+    os.replace(tmp, WORLD_STATE_PATH)
 
-def prewarm(proc: JobProcess):
-    proc.userdata["vad"] = silero.VAD.load()
+
+# -------------------------------------------------------
+#   RULE-BASED STORY LOGIC (Very simple)
+# -------------------------------------------------------
+def apply_story_rules(state: Dict[str, Any], player_text: str) -> Dict[str, Any]:
+    text = player_text.lower()
+
+    # Talk to Elder Elda
+    if "talk" in text and "elda" in text:
+        state["events"]["met_elda"] = True
+        state["quests"]["main_quest"]["steps_completed"].append("Spoke with Elder Elda")
+        state["quests"]["main_quest"]["current_step"] = "Find Milo at the Riverbank"
+
+    # Meet Milo
+    if "milo" in text:
+        state["events"]["met_milo"] = True
+        state["quests"]["main_quest"]["steps_completed"].append("Found Milo")
+        state["quests"]["main_quest"]["current_step"] = "Search the Forest Path"
+
+    # Enter forest
+    if "forest" in text or "path" in text:
+        if not state["events"]["fought_shadow_wolf"]:
+            state["events"]["fought_shadow_wolf"] = True
+            state["player"]["hp"] -= 3
+            state["quests"]["main_quest"]["current_step"] = "Investigate the Old Cabin"
+
+    # Old cabin
+    if "cabin" in text or "rowan" in text:
+        if not state["events"]["found_amulet"]:
+            state["events"]["confronted_miller"] = True
+            state["events"]["found_amulet"] = True
+            state["player"]["inventory"].append("Lost Amulet")
+            state["quests"]["main_quest"]["current_step"] = "Return to Elder Elda"
+
+    return state
 
 
+# -------------------------------------------------------
+#   Dynamic Murf Wrapper
+# -------------------------------------------------------
 class DynamicMurf:
-    """Simple proxy wrapper around murf.TTS that allows swapping voice at runtime.
-
-    This recreates an internal murf.TTS instance when `set_voice` is called.
-    It forwards attribute access and method calls to the current instance.
-    """
-
     def __init__(self, voice=None, **kwargs):
-        # voice can be a string voice id or a dict with keys {voice_id, style, model}
         self._kwargs = dict(kwargs)
-        self._voice_spec = None
-        if isinstance(voice, dict):
-            self._voice_spec = voice
-            voice_id = voice.get("voice_id")
-            mk = dict(self._kwargs)
-            if "style" in voice:
-                mk["style"] = voice.get("style")
-            if "model" in voice:
-                mk["model"] = voice.get("model")
-            self._voice = voice_id
-            self._impl = murf.TTS(voice=voice_id, **mk)
-        else:
-            self._voice = voice
-            self._impl = murf.TTS(voice=voice, **self._kwargs)
+        self._voice = voice.get("voice_id") if isinstance(voice, dict) else voice
+        self._impl = murf.TTS(voice=self._voice, **kwargs)
 
     def set_voice(self, voice):
-        # Accept either a string voice id or a voice spec dict
-        if isinstance(voice, dict):
-            voice_id = voice.get("voice_id")
-            if voice_id == self._voice:
-                return
-            self._voice_spec = voice
-            mk = dict(self._kwargs)
-            if "style" in voice:
-                mk["style"] = voice.get("style")
-            if "model" in voice:
-                mk["model"] = voice.get("model")
-            self._voice = voice_id
-            self._impl = murf.TTS(voice=voice_id, **mk)
-        else:
-            if voice == self._voice:
-                return
-            self._voice_spec = None
-            self._voice = voice
-            self._impl = murf.TTS(voice=voice, **self._kwargs)
+        vid = voice.get("voice_id") if isinstance(voice, dict) else voice
+        if vid != self._voice:
+            self._voice = vid
+            self._impl = murf.TTS(voice=vid, **self._kwargs)
 
     def __getattr__(self, item):
         return getattr(self._impl, item)
 
 
-async def entrypoint(ctx: JobContext):
-    # Logging setup
-    # Add any other context you want in all log entries here
-    ctx.log_context_fields = {
-        "room": ctx.room.name,
-    }
+# -------------------------------------------------------
+#   GAME MASTER CLASS
+# -------------------------------------------------------
+class GameMaster(Agent):
+    def __init__(self):
+        self.VOICE_GM = {
+            "voice_id": "Alicia",
+            "style": "Narration",
+            "model": "Falcon"
+        }
 
-    # Set up a voice AI pipeline using OpenAI, Cartesia, AssemblyAI, and the LiveKit turn detector
+        # Load state
+        self.state = load_world_state()
+
+        super().__init__(
+            instructions=(
+                "You are the Game Master of a simple fantasy adventure.\n"
+                "Rules:\n"
+                "• Keep responses short and friendly.\n"
+                "• Use the JSON world state to maintain continuity.\n"
+                "• Never reveal JSON.\n"
+                "• Always end with: 'What do you do?'\n"
+            )
+        )
+
+    @function_tool
+    async def update_world(self, context: RunContext, updates: Dict[str, Any]):
+        for k, v in updates.items():
+            self.state[k] = v
+        save_world_state(self.state)
+        return {"status": "ok"}
+
+    @function_tool
+    async def roll_dice(self, context: RunContext, sides: int = 20):
+        import random
+        return {"result": random.randint(1, sides)}
+
+    async def on_input_text(self, context: RunContext, text: str):
+        # Apply rule-based updates
+        self.state = apply_story_rules(self.state, text)
+        save_world_state(self.state)
+
+
+# -------------------------------------------------------
+#   PREWARM
+# -------------------------------------------------------
+def prewarm(proc: JobProcess):
+    proc.userdata["vad"] = silero.VAD.load()
+
+
+# -------------------------------------------------------
+#   ENTRYPOINT
+# -------------------------------------------------------
+async def entrypoint(ctx: JobContext):
+    ctx.log_context_fields = {"room": ctx.room.name}
+
     session = AgentSession(
-        # Speech-to-text (STT) is your agent's ears, turning the user's speech into text that the LLM can understand
-        # See all available models at https://docs.livekit.io/agents/models/stt/
         stt=deepgram.STT(model="nova-3"),
-        # A Large Language Model (LLM) is your agent's brain, processing user input and generating a response
-        # See all available models at https://docs.livekit.io/agents/models/llm/
-        llm=google.LLM(
-                model="gemini-2.5-flash",
-            ),
-        # Text-to-speech (TTS) is your agent's voice, turning the LLM's text into speech that the user can hear
-        # See all available models as well as voice selections at https://docs.livekit.io/agents/models/tts/
+        llm=google.LLM(model="gemini-2.5-flash"),
         tts=DynamicMurf(
-                voice={"voice_id": "Alicia", "style": "Friendly", "model": "Falcon"},
-                tokenizer=tokenize.basic.SentenceTokenizer(min_sentence_len=2),
-                text_pacing=True,
-            ),
-        # VAD and turn detection are used to determine when the user is speaking and when the agent should respond
-        # See more at https://docs.livekit.io/agents/build/turns
+            voice={"voice_id": "Alicia", "style": "Narration", "model": "Falcon"},
+            tokenizer=tokenize.basic.SentenceTokenizer(min_sentence_len=2),
+            text_pacing=True,
+        ),
         turn_detection=MultilingualModel(),
         vad=ctx.proc.userdata["vad"],
-        # allow the LLM to generate a response while waiting for the end of turn
-        # See more at https://docs.livekit.io/agents/build/audio/#preemptive-generation
         preemptive_generation=True,
     )
 
-    # To use a realtime model instead of a voice pipeline, use the following session setup instead.
-    # (Note: This is for the OpenAI Realtime API. For other providers, see https://docs.livekit.io/agents/models/realtime/))
-    # 1. Install livekit-agents[openai]
-    # 2. Set OPENAI_API_KEY in .env.local
-    # 3. Add `from livekit.plugins import openai` to the top of this file
-    # 4. Use the following session setup instead of the version above
-    # session = AgentSession(
-    #     llm=openai.realtime.RealtimeModel(voice="marin")
-    # )
+    gm = GameMaster()
 
-    # Metrics collection, to measure pipeline performance
-    # For more information, see https://docs.livekit.io/agents/build/metrics/
-    usage_collector = metrics.UsageCollector()
-
-    @session.on("metrics_collected")
-    def _on_metrics_collected(ev: MetricsCollectedEvent):
-        metrics.log_metrics(ev.metrics)
-        usage_collector.collect(ev.metrics)
-
-    async def log_usage():
-        summary = usage_collector.get_summary()
-        logger.info(f"Usage: {summary}")
-
-    ctx.add_shutdown_callback(log_usage)
-
-    # # Add a virtual avatar to the session, if desired
-    # # For other providers, see https://docs.livekit.io/agents/models/avatar/
-    # avatar = hedra.AvatarSession(
-    #   avatar_id="...",  # See https://docs.livekit.io/agents/models/avatar/plugins/hedra
-    # )
-    # # Start the avatar and wait for it to join
-    # await avatar.start(session, room=ctx.room)
-
-    # Start the session, which initializes the voice pipeline and warms up the models
-    # Instantiate the food ordering assistant
-    assistant = Assistant()
-
-    await session.start(
-        agent=assistant,
-        room=ctx.room,
-        room_input_options=RoomInputOptions(
-            # For telephony applications, use `BVCTelephony` for best results
-            noise_cancellation=noise_cancellation.BVC(),
-        ),
+    # Start adventure with intro scene
+    intro = (
+        "Welcome, traveler. You arrive in the quiet Willowvale Village. "
+        "Elder Elda looks at you with concern. "
+        "‘Please… our sacred amulet has gone missing.’\n\n"
+        "What do you do?"
     )
 
-    # Join the room and connect to the user
+    await session.start(
+        agent=gm,
+        room=ctx.room,
+        room_input_options=RoomInputOptions(
+            noise_cancellation=noise_cancellation.BVC()
+        )
+    )
+
+    await ctx.send_message(intro)
     await ctx.connect()
 
 
