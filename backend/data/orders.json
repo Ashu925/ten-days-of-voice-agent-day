@@ -1,0 +1,16 @@
+[
+  {
+    "id": "ORD202511302030541b44",
+    "items": [
+      {
+        "product_id": "hoodie-001",
+        "name": "Black Pullover Hoodie",
+        "quantity": 1,
+        "unit_price": 1499
+      }
+    ],
+    "total": 1499,
+    "currency": "INR",
+    "created_at": "2025-11-30T20:30:54.678870"
+  }
+]
