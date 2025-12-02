@@ -17,6 +17,8 @@ export interface AppConfig {
   // for LiveKit Cloud Sandbox
   sandboxId?: string;
   agentName?: string;
+  // optional player name, used by Improv page
+  playerName?: string;
 }
 
 export const APP_CONFIG_DEFAULTS: AppConfig = {
@@ -38,4 +40,5 @@ export const APP_CONFIG_DEFAULTS: AppConfig = {
   // for LiveKit Cloud Sandbox
   sandboxId: undefined,
   agentName: undefined,
+  playerName: undefined,
 };

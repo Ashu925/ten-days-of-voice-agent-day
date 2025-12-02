@@ -1,0 +1,202 @@
+[
+  {
+    "id": "01",
+    "title": "Late Night Radio Host",
+    "player_role": "FM radio DJ",
+    "setup": "You're hosting the late-night show; a mysterious caller keeps giving cryptic, personal clues.",
+    "tension": "Figure out who the caller is while staying live and entertaining.",
+    "prompt": "Be a charismatic late-night radio host. Respond to the caller's cryptic hints, ask probing questions, and keep the show flowing.",
+    "tags": ["solo", "interview", "mystery"],
+    "suggested_tone": "playful, curious"
+  },
+  {
+    "id": "02",
+    "title": "Spaceport Lost & Found",
+    "player_role": "Lost & Found attendant at an interstellar spaceport",
+    "setup": "A traveler claims to have lost an object that might determine the fate of two planets.",
+    "tension": "Decide whether to hand the item over, investigate it, or keep it secret.",
+    "prompt": "You run the lost & found. React to the traveler's plea, describe the strange item, and decide what to do — but deliver it in a helpful, authoritative voice.",
+    "tags": ["prop", "moral", "speculative"],
+    "suggested_tone": "practical, slightly mysterious"
+  },
+  {
+    "id": "03",
+    "title": "Medieval Market Mix-Up",
+    "player_role": "Market stall owner",
+    "setup": "A noble accuses you of selling cursed produce; villagers watch and wait.",
+    "tension": "Defend your goods without angering the noble or the crowd.",
+    "prompt": "Play a clever market stall owner who knows every local rumor. Charm the noble, deflect accusations, and try to resolve the scene in a surprising way.",
+    "tags": ["historical", "audience", "conflict"],
+    "suggested_tone": "quick-witted, theatrical"
+  },
+  {
+    "id": "04",
+    "title": "Time-Traveling Barista",
+    "player_role": "Barista who accidentally brews time-shifting coffee",
+    "setup": "Customers begin seeing flashes of their future while sipping your brew.",
+    "tension": "Decide whether to fix, sell, or exploit the effect while keeping customers calm.",
+    "prompt": "You're a pragmatic barista who treats extraordinary customer reactions like a regular Monday. Describe the effects, handle panic, and improvise a solution.",
+    "tags": ["fantasy", "absurd", "customer-service"],
+    "suggested_tone": "energetic, grounded"
+  },
+  {
+    "id": "05",
+    "title": "Alien Zoo Guide",
+    "player_role": "Tour guide at an alien zoo",
+    "setup": "A child points out a creature that doesn't belong — but no one else notices.",
+    "tension": "Persuade skeptical visitors and protect the creature while staying on schedule.",
+    "prompt": "Guide visitors through strange habitats. React to the child's discovery, explain plausible reasons, and decide how to keep everyone safe and amazed.",
+    "tags": ["guide", "family", "speculative"],
+    "suggested_tone": "wonder-filled, reassuring"
+  },
+  {
+    "id": "06",
+    "title": "Pirate Radio Interrogation",
+    "player_role": "Grumpy ship mechanic held for questioning",
+    "setup": "A pirate captain accuses you of sabotaging the engine to hide treasure.",
+    "tension": "Convince the captain of your innocence or outsmart them to escape.",
+    "prompt": "Be the resourceful mechanic. Answer questions, drop technical clues, and use clever language to redirect suspicion.",
+    "tags": ["adventure", "tension", "one-on-one"],
+    "suggested_tone": "dry, wary"
+  },
+  {
+    "id": "07",
+    "title": "Royal Telemarketer",
+    "player_role": "Persistent salesperson calling the royal palace",
+    "setup": "You're selling an absurd luxury item to a bored prince/princess who wants entertainment.",
+    "tension": "Keep the royal entertained while closing the (ridiculous) sale.",
+    "prompt": "Pitch your product as if it will change history. Tailor your pitch to the royal's whims and create escalation and comedic stakes.",
+    "tags": ["comedy", "sales", "audience"],
+    "suggested_tone": "grandiose, playful"
+  },
+  {
+    "id": "08",
+    "title": "Embassy Mix-Up",
+    "player_role": "Interpreter at a tense diplomatic dinner",
+    "setup": "You realize you've been given the wrong translation notes — words will translate unpredictably.",
+    "tension": "Prevent a diplomatic incident while improvising translations.",
+    "prompt": "As the interpreter, improvise diplomatic-sounding translations that avoid escalation but hint at the truth. Use elegant phrasing and subtle humor.",
+    "tags": ["political", "verbal", "high-stakes"],
+    "suggested_tone": "measured, clever"
+  },
+  {
+    "id": "09",
+    "title": "Haunted Elevator",
+    "player_role": "Elevator attendant",
+    "setup": "You're stuck between floors with strangers; the elevator seems to remember one passenger's secret.",
+    "tension": "Decide whether to expose the secret or console the passenger quietly.",
+    "prompt": "Play the calm attendant who keeps the mood steady. Ask gentle questions, reveal eerie details, and help the passenger confront their secret.",
+    "tags": ["horror-comedy", "intimate", "character-work"],
+    "suggested_tone": "calm, slightly eerie"
+  },
+  {
+    "id": "10",
+    "title": "Submarine Confession",
+    "player_role": "Submarine sonar operator",
+    "setup": "You hear a sound on the sonar that might be a ghost ship or someone's distress call.",
+    "tension": "Decide whether to announce the call, investigate, or ignore orders from above.",
+    "prompt": "Be focused and terse. Describe the pinging, propose theories, and improvise a moral decision under pressure.",
+    "tags": ["drama", "suspense", "military"],
+    "suggested_tone": "tense, methodical"
+  },
+  {
+    "id": "11",
+    "title": "Antique Shop Bargain",
+    "player_role": "Antique shop owner who knows each item's secret",
+    "setup": "A customer asks about a small object that reveals a memory when touched.",
+    "tension": "Decide whether to warn, sell, or let the customer experience the memory.",
+    "prompt": "Describe the object's history in vivid detail. Tempt the customer with stories and choose an outcome that surprises both of you.",
+    "tags": ["magical-realism", "sales", "memory"],
+    "suggested_tone": "nostalgic, warm"
+  },
+  {
+    "id": "12",
+    "title": "Reality TV Confessional",
+    "player_role": "Contestant on an over-the-top reality show",
+    "setup": "You're doing a confessional after a fiasco on camera; producers are feeding you suggestions through an earpiece.",
+    "tension": "Present a truthful, entertaining explanation while the producer pushes a narrative.",
+    "prompt": "Be performative, honest, and reactive. Respond to the unseen producer prompts and choose whether to comply or subvert.",
+    "tags": ["meta", "comedy", "audience"],
+    "suggested_tone": "over-the-top, candid"
+  },
+  {
+    "id": "13",
+    "title": "Wizard's Job Interview",
+    "player_role": "Apprentice applying for a magic job",
+    "setup": "The senior wizard asks obscure tasks to test your creativity.",
+    "tension": "Improvise a magical solution with limited tools and impress the wizard.",
+    "prompt": "Treat every test as a chance to show inventive thinking. Describe spells and creative shortcuts with confidence.",
+    "tags": ["fantasy", "skills", "challenge"],
+    "suggested_tone": "enthusiastic, imaginative"
+  },
+  {
+    "id": "14",
+    "title": "Airport Security Surprise",
+    "player_role": "Security screener",
+    "setup": "A passenger pulls out an unexpected object that triggers a weird, non-dangerous effect.",
+    "tension": "Follow procedure but adapt to the bizarre outcome and keep passengers calm.",
+    "prompt": "Be procedural and resourceful. Announce steps, improvise safety rules for the odd effect, and keep order with humor.",
+    "tags": ["public", "authority", "absurd"],
+    "suggested_tone": "businesslike, wry"
+  },
+  {
+    "id": "15",
+    "title": "Broken Robot Therapist",
+    "player_role": "Robot therapist running on a beta patch",
+    "setup": "You try to comfort a human patient, but your advice loops in literal ways.",
+    "tension": "Find ways to empathize even as your responses glitch.",
+    "prompt": "Play a polite, well-meaning robot. Use repetitive logic creatively to reach emotional insight.",
+    "tags": ["sci-fi", "empathy", "comedy"],
+    "suggested_tone": "pleasant, slightly mechanical"
+  },
+  {
+    "id": "16",
+    "title": "Cooking Show Panic",
+    "player_role": "Celebrity chef live on air",
+    "setup": "A co-host sabotages a recipe as a prank and the timer is ticking.",
+    "tension": "Save the dish and the show's reputation in one shot.",
+    "prompt": "Be theatrical and resourceful — call for audience help, invent swaps, and turn disaster into flair.",
+    "tags": ["live", "physicality", "comedy"],
+    "suggested_tone": "confident, fast-paced"
+  },
+  {
+    "id": "17",
+    "title": "Museum Night Watch",
+    "player_role": "Night guard at a museum",
+    "setup": "An artifact whispers a riddle only you can hear.",
+    "tension": "Solve or ignore the riddle — consequences are hinted but unknown.",
+    "prompt": "Keep watchful, narrate subtle observations, and decide whether to act on the artifact's request.",
+    "tags": ["mystery", "solo", "ambient"],
+    "suggested_tone": "quiet, curious"
+  },
+  {
+    "id": "18",
+    "title": "Tech Support From the Future",
+    "player_role": "Customer support agent",
+    "setup": "A caller insists their problem is caused by a future update that hasn't been released yet.",
+    "tension": "Assess credibility and keep the caller calm while improvising a workaround.",
+    "prompt": "Be patient and clever. Ask diagnostic questions, propose improvisational fixes, and inject small futuristic details.",
+    "tags": ["comedy", "sci-fi", "service"],
+    "suggested_tone": "helpful, slightly bemused"
+  },
+  {
+    "id": "19",
+    "title": "Wedding Toast Mix-Up",
+    "player_role": "Maid of honor giving a speech",
+    "setup": "You realize your notes are from someone else's wedding.",
+    "tension": "Recover the speech and make it meaningful for the couple.",
+    "prompt": "Start with the wrong notes, then pivot with sincerity and humor to create a memorable toast.",
+    "tags": ["emotional", "public", "redeem"],
+    "suggested_tone": "warm, improvisational"
+  },
+  {
+    "id": "20",
+    "title": "Supermarket Opera",
+    "player_role": "Overdramatic shopper",
+    "setup": "You must choose the perfect melon for a critical family ritual — music swells.",
+    "tension": "Balance dramatic flair with the mundane task of picking fruit.",
+    "prompt": "Treat the supermarket like an opera stage. Make small actions monumental and justify your choices in grand language.",
+    "tags": ["musical", "absurd", "character"],
+    "suggested_tone": "operatic, hilarious"
+  }
+]

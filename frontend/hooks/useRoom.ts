@@ -57,6 +57,7 @@ export function useRoom(appConfig: AppConfig) {
                     agents: [{ agent_name: appConfig.agentName }],
                   }
                 : undefined,
+              playerName: (appConfig as any).playerName,
             }),
           });
           return await res.json();
